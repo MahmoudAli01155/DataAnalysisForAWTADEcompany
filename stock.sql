@@ -74,24 +74,44 @@ ORDER BY Total_Payment Desc;
 SELECT 
     SO.OrderID,
     SO.OrderDate,
-	SO.[CustomerID],
+	ALC.Description AS Customer,
     SO.[DesiredDeliveryDate],
 	OSL.Description AS OrderSatus,
     SO.[GrossTotal],
 	SO.[GPSLatitude],
     SO.[GPSlongitude],
-	SO.[CreatedBy],
+	ALS.[Description] AS CreatedBy,
     SO.[CreatedDate],
+	--ALSS.Description,
     SO.[UpdatedBy],
-    SO.[UpdatedDate],
-    E.EmployeeID,
-    E.EmployeeCode
+    SO.[UpdatedDate]
+	
 FROM 
    [AwtadSonicData].[dbo].[SalesOrder] AS SO
 JOIN 
-    [AwtadSonicData].[dbo].[Employee] AS E
+    [AwtadSonicData].[dbo].[AccountEmp] AS AE
 ON 
-    SO.EmployeeID = E.EmployeeID
+    SO.EmployeeID = AE.EmployeeID
+JOIN 
+    [AwtadSonicData].[dbo].[AccountLanguage] AS ALS
+ON 
+    AE.[AccountID] = ALS.[AccountID] and ALS.LanguageID = 2
+--JOIN 
+--    [AwtadSonicData].[dbo].[AccountEmp] AS AES
+--ON 
+--    SO.UpdatedBy = AES.EmployeeID
+--JOIN 
+--    [AwtadSonicData].[dbo].[AccountLanguage] AS ALSS
+--ON 
+--    AE.[AccountID] = ALSS.[AccountID] and ALSS.LanguageID = 2
+JOIN 
+    [AwtadSonicData].[dbo].[AccountCust] AS AC
+ON 
+    SO.CustomerID = AC.CustomerID
+JOIN 
+    [AwtadSonicData].[dbo].[AccountLanguage] AS ALC
+ON 
+    AC.[AccountID] = ALC.[AccountID] and ALC.LanguageID = 2
 JOIN 
     [AwtadSonicData].[dbo].[OrderStatusLanguage] AS OSL
 ON 

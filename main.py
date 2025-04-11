@@ -193,24 +193,35 @@ SQL_QUERY4 ="""
 SELECT 
     SO.OrderID,
     SO.OrderDate,
-	SO.[CustomerID],
+	ALC.Description AS Customer,
     SO.[DesiredDeliveryDate],
 	OSL.Description AS OrderSatus,
     SO.[GrossTotal],
 	SO.[GPSLatitude],
     SO.[GPSlongitude],
-	SO.[CreatedBy],
+	ALS.[Description] AS CreatedBy,
     SO.[CreatedDate],
     SO.[UpdatedBy],
-    SO.[UpdatedDate],
-    E.EmployeeID,
-    E.EmployeeCode
+    SO.[UpdatedDate]
+	
 FROM 
    [AwtadSonicData].[dbo].[SalesOrder] AS SO
 JOIN 
-    [AwtadSonicData].[dbo].[Employee] AS E
+    [AwtadSonicData].[dbo].[AccountEmp] AS AE
 ON 
-    SO.EmployeeID = E.EmployeeID
+    SO.EmployeeID = AE.EmployeeID
+JOIN 
+    [AwtadSonicData].[dbo].[AccountLanguage] AS ALS
+ON 
+    AE.[AccountID] = ALS.[AccountID] and ALS.LanguageID = 2
+JOIN 
+    [AwtadSonicData].[dbo].[AccountCust] AS AC
+ON 
+    SO.CustomerID = AC.CustomerID
+JOIN 
+    [AwtadSonicData].[dbo].[AccountLanguage] AS ALC
+ON 
+    AC.[AccountID] = ALC.[AccountID] and ALC.LanguageID = 2
 JOIN 
     [AwtadSonicData].[dbo].[OrderStatusLanguage] AS OSL
 ON 
@@ -257,7 +268,7 @@ ORDER BY
 
 # Execute query
 cursor = conn.cursor()
-cursor.execute(SQL_QUERY5)
+cursor.execute(SQL_QUERY4)
 
 # Fetch results
 records = cursor.fetchall()
@@ -267,7 +278,7 @@ columns = [column[0] for column in cursor.description]
 df = pd.DataFrame.from_records(records, columns=columns)
 
 # Save DataFrame to Excel
-df.to_excel('output5.xlsx', index=False)
+df.to_excel('output4.xlsx', index=False)
 
 # Close cursor and connection
 cursor.close()
